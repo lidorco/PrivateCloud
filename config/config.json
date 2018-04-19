@@ -2,7 +2,13 @@
     "server_configuration": {
         "download_all": "True",
         "upload_filename_magic": "upload_",
+        "local_cloud_path": "tests/local_cloud",
         "sync_interval_in_sec": 30,
         "log_path": "logs/privatecloud.log"
-    }
+    },
+    "cloud_credential": {
+            "dropbox": {
+              "access_token": "YOUR_ACCESS_TOKEN"
+            }
+        }
 }
