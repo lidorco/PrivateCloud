@@ -1,0 +1,8 @@
+{
+    "server_configuration": {
+        "download_all": "True",
+        "upload_filename_magic": "upload_",
+        "sync_interval_in_sec": 30,
+        "log_path": "logs/privatecloud.log"
+    }
+}
