@@ -8,3 +8,7 @@ def init_logger(log_path):
     hdlr.setFormatter(formatter)
     logger.addHandler(hdlr)
     logger.setLevel(logging.INFO)
+
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(formatter)
+    logger.addHandler(consoleHandler)
