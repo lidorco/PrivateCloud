@@ -1,10 +1,16 @@
 {
     "server_configuration": {
-        "download_all": "True",
+        "enable_download": "True",
+        "download_filename_magic": "download_",
+        "enable_upload": "True",
         "upload_filename_magic": "upload_",
+
         "local_cloud_path": "tests/local_cloud",
-        "sync_interval_in_sec": 30,
-        "log_path": "logs/privatecloud.log"
+        "sync_interval_in_sec": 5,
+        "log_path": "logs/privatecloud.log",
+        "bytes_length_in_thin_mode": 1,
+        "tmp_path": "tests/tmp"
+
     },
     "cloud_credential": {
             "dropbox": {
