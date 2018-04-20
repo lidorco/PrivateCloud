@@ -10,11 +10,11 @@ class FileInfo:
         self.file_path = path
 
 class FolderInfo:
-    file_name = u""
-    file_path = u""
+    folder_name = u""
+    folder_path = u""
     def __init__(self, name, path):
-        self.file_name = name
-        self.file_path = path
+        self.folder_name = name
+        self.folder_path = path
 
 
 class ClientBase:

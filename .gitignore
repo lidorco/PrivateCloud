@@ -105,3 +105,8 @@ venv.bak/
 
 # pycharm
 .idea/
+
+#tests
+tests/tmp
+tests/local_files
+tests/local_cloud

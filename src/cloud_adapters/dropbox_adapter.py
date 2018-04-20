@@ -16,6 +16,8 @@ class DropboxClient(ClientBase):
             raise e
 
     def download_file(self, src, dst):
+        if not src.startswith('\\') and not src.startswith('/'):
+            src = '/' + src
         response = self.dbx.files_download(src)
         local_file = open(dst, 'wb')
         data = response[1].content
@@ -23,6 +25,8 @@ class DropboxClient(ClientBase):
         local_file.close()
 
     def upload_file(self, src, dst):
+        if not dst.startswith('\\') and not dst.startswith('/'):
+            dst = '/' + dst
         local_file = open(src, 'rb')
         content = local_file.read()
         local_file.close()
@@ -36,7 +40,7 @@ class DropboxClient(ClientBase):
         self.dbx.files_delete_v2(path)
 
     def get_dir_content(self, dir_path):
-        if dir_path == "/":
+        if dir_path == "/" or dir_path == "\\":
             dir_path = ""
         response = self.dbx.files_list_folder(dir_path)
         entries = []
