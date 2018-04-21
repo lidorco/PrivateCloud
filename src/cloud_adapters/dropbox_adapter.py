@@ -67,6 +67,9 @@ class DropboxClient(ClientBase):
         return entries
 
     def create_dir(self, dir_path):
+        if not dir_path.startswith('\\') and not dir_path.startswith('/'):
+            dir_path = '/' + dir_path
+        dir_path = dir_path.replace('\\', '/')
         self.dbx.files_create_folder_v2(dir_path)
 
     def is_dir_exist(self, dir_path):

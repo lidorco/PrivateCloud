@@ -29,8 +29,8 @@ def load_configuration():
     local_cloud_path = configs["server_configuration"]["local_cloud_path"]
     upload_prefix = configs["server_configuration"]["upload_filename_magic"]
     download_prefix = configs["server_configuration"]["download_filename_magic"]
-    enable_download = bool(configs["server_configuration"]["enable_download"])
-    enable_upload = bool(configs["server_configuration"]["enable_upload"])
+    enable_download = json.loads(configs["server_configuration"]["enable_download"].lower())
+    enable_upload = json.loads(configs["server_configuration"]["enable_upload"].lower())
     thin_mode_byte_length = int(configs["server_configuration"]["bytes_length_in_thin_mode"])
     tmp_path = configs["server_configuration"]["tmp_path"]
     sync_interval_in_sec = configs["server_configuration"]["sync_interval_in_sec"]
