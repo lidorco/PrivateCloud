@@ -6,6 +6,8 @@ import src.config as g
 
 
 def remove_first_slash(path):
+    if len(path) == 0:
+        return path
     if path[0] == '\\' or path[0] == '/':
         return path[1:]
     return path
@@ -39,7 +41,20 @@ def create_partial_file(file_path, byte_length, partial_file_path):
     partial_file.close()
 
 
+def not_start_with_saved_prefix(file_name):
+    if file_name.startswith(g.download_prefix) or file_name.startswith(g.upload_prefix):
+        return False
+    return True
+
+
 def dispatch_remote_iteration(client):
+    """
+    Walk on remote cloud files:
+        * Create dir if exist only on remote
+        * If file name start with upload magic, upload from local to remote (if configured)
+        * If file name start with download magic, download from remote to local (if configured)
+    :param client: ClientBase
+    """
     logger.info("dispatch_remote_iteration started")
     remote_dir = client.get_dir_content('/')
     while len(remote_dir) != 0:
@@ -79,6 +94,35 @@ def dispatch_remote_iteration(client):
                 client.upload_file(partial_file_path, remote_path)
                 os.remove(partial_file_path)
 
-            elif not os.path.exists(os.path.advjoin(g.local_cloud_path, current.file_path)):
+            elif not os.path.exists(os.path.advjoin(g.local_cloud_path, current.file_path)) \
+                    and not_start_with_saved_prefix(current.file_name):
                 logger.info("dispatch_remote_iteration : found file that only on remote cloud, downloading it")
                 client.download_file(current.file_path, os.path.advjoin(g.local_cloud_path, current.file_path))
+
+
+def dispatch_local_iteration(client):
+    """
+    Walk on local cloud files:
+        * Create dir if exist only on local
+        * If file exist only on local, upload to remote (thin/full)
+    :param client: ClientBase
+    """
+    logger.info("dispatch_local_iteration started")
+    for root, dirs, files in os.walk(g.local_cloud_path):
+        root = root[len(g.local_cloud_path):]
+        for dir in dirs:
+            if not client.is_dir_exist(os.path.advjoin(root, dir)):
+                client.create_dir(os.path.advjoin(root, dir))
+        for file in files:
+            if g.enable_download and not client.is_file_exist(os.path.advjoin(root, file)):
+                logger.info("dispatch_local_iteration : found new file on local cloud, "
+                            "upload thin version to remote cloud")
+                local_path = os.path.advjoin(g.local_cloud_path, root, file)
+                partial_file_path = os.path.advjoin(g.tmp_path, file)
+                remote_path = os.path.advjoin(root, file)
+                create_partial_file(local_path, g.thin_mode_byte_length, partial_file_path)
+                client.upload_file(partial_file_path, remote_path)
+                os.remove(partial_file_path)
+            elif not g.enable_download and not client.is_file_exist(os.path.advjoin(root, file)):
+                logger.info("dispatch_local_iteration : found new file on local cloud, upload to remote cloud")
+                client.upload_file(os.path.advjoin(g.local_cloud_path, root, file), os.path.advjoin(root, file))
