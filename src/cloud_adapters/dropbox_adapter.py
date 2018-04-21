@@ -18,6 +18,7 @@ class DropboxClient(ClientBase):
     def download_file(self, src, dst):
         if not src.startswith('\\') and not src.startswith('/'):
             src = '/' + src
+        src = src.replace('\\', '/')
         response = self.dbx.files_download(src)
         local_file = open(dst, 'wb')
         data = response[1].content
@@ -30,6 +31,7 @@ class DropboxClient(ClientBase):
         local_file = open(src, 'rb')
         content = local_file.read()
         local_file.close()
+        dst = dst.replace('\\', '/')
         self.dbx.files_upload(content, dst, mute=True)
 
     def get_file_info(self, path):
@@ -66,3 +68,31 @@ class DropboxClient(ClientBase):
 
     def create_dir(self, dir_path):
         self.dbx.files_create_folder_v2(dir_path)
+
+    def is_dir_exist(self, dir_path):
+        if not dir_path.startswith('\\') and not dir_path.startswith('/'):
+            dir_path = '/' + dir_path
+        dir_path = dir_path.replace('\\', '/')
+        try:
+            metadata = self.dbx.files_get_metadata(dir_path)
+        except dropbox.exceptions.ApiError:
+            return False
+
+        if metadata.__class__ == dropbox.files.FolderMetadata:
+            return True
+        elif metadata.__class__ == dropbox.files.FileMetadata:
+            logger.error("DROPBOX : remote file {0} excepted to be a dir".format(dir_path))
+
+    def is_file_exist(self, file_path):
+        if not file_path.startswith('\\') and not file_path.startswith('/'):
+            file_path = '/' + file_path
+        file_path = file_path.replace('\\', '/')
+        try:
+            metadata = self.dbx.files_get_metadata(file_path)
+        except dropbox.exceptions.ApiError:
+            return False
+
+        if metadata.__class__ == dropbox.files.FileMetadata:
+            return True
+        elif metadata.__class__ == dropbox.files.FolderMetadata:
+            logger.error("DROPBOX : remote dir {0} excepted to be a file".format(file_path))

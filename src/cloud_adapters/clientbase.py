@@ -43,3 +43,11 @@ class ClientBase:
     @abc.abstractmethod
     def create_dir(self, dir_path):
         pass
+
+    @abc.abstractmethod
+    def is_dir_exist(self, dir_path):
+        pass
+
+    @abc.abstractmethod
+    def is_file_exist(self, file_path):
+        pass
